@@ -1,15 +1,22 @@
 import FirebaseFirestore
+import FirebaseAuth
 
 class FirestoreService {
     
     // MARK:- Static Properties
     
     static let manager = FirestoreService()
+    static let posts = "posts"
+    static let users = "users"
+
+    // MARK:- Private Properties
+    
+    private let db = Firestore.firestore()
     
     // MARK:- Internal Properties
     
     func getPosts(onCompletion: @escaping (Result<[Post], Error>) -> Void) {
-        db.collection("posts").getDocuments() { (querySnapshot, err) in
+        db.collection(FirestoreService.posts).getDocuments() { (querySnapshot, err) in
             if let err = err {
                 onCompletion(.failure(err))
             } else {
@@ -23,7 +30,7 @@ class FirestoreService {
     }
     
     func create(_ user: PersistedUser, onCompletion: @escaping (Result<Void, Error>) -> Void) {
-        db.collection("users").document(user.uid).setData(user.fieldsDict) { err in
+        db.collection(FirestoreService.users).document(user.uid).setData(user.fieldsDict) { err in
             if let err = err {
                 onCompletion(.failure(err))
             } else {
@@ -42,7 +49,11 @@ class FirestoreService {
         }
     }
     
-    // MARK:- Private Properties
+    func makePostsOnUser(_ post: Post, comment: String, completion: @escaping (Result<Bool, Error>) -> () ) {
+        guard let user = Auth.auth().currentUser else { return }
     
-    private let db = Firestore.firestore()
+        let docRef = db.collection(FirestoreService.users).document()
+        
+        
+    }
 }
