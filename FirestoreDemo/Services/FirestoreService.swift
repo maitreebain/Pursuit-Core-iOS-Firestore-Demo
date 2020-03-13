@@ -6,8 +6,9 @@ class FirestoreService {
     // MARK:- Static Properties
     
     static let manager = FirestoreService()
-    static let posts = "posts"
-    static let users = "users"
+    static let postsCollection = "posts"
+    static let usersCollection = "users"
+    static let commentsCollection = "comments"
 
     // MARK:- Private Properties
     
@@ -16,7 +17,7 @@ class FirestoreService {
     // MARK:- Internal Properties
     
     func getPosts(onCompletion: @escaping (Result<[Post], Error>) -> Void) {
-        db.collection(FirestoreService.posts).getDocuments() { (querySnapshot, err) in
+        db.collection(FirestoreService.postsCollection).getDocuments() { (querySnapshot, err) in
             if let err = err {
                 onCompletion(.failure(err))
             } else {
@@ -30,7 +31,7 @@ class FirestoreService {
     }
     
     func create(_ user: PersistedUser, onCompletion: @escaping (Result<Void, Error>) -> Void) {
-        db.collection(FirestoreService.users).document(user.uid).setData(user.fieldsDict) { err in
+        db.collection(FirestoreService.usersCollection).document(user.uid).setData(user.fieldsDict) { err in
             if let err = err {
                 onCompletion(.failure(err))
             } else {
@@ -52,7 +53,9 @@ class FirestoreService {
     func makePostsOnUser(_ post: Post, comment: String, completion: @escaping (Result<Bool, Error>) -> () ) {
         guard let user = Auth.auth().currentUser else { return }
     
-        let docRef = db.collection(FirestoreService.users).document()
+        let docRef = db.collection(FirestoreService.postsCollection).document(post.uuidStr).collection(FirestoreService.commentsCollection).document()
+        
+        
         
         
     }
